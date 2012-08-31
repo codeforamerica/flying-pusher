@@ -1,10 +1,10 @@
 var apns = require('apn');
 
 var options = {
-    cert: null,             /* Certificate file path */
-    certData: process.env.CERT,       /* String or Buffer containing certificate data, if supplied uses this instead of cert file path */
-    key:  null,             /* Key file path */
-    keyData: process.env.CERT,        /* String or Buffer containing key data, as certData */
+    cert: "dev_cert.pem",             /* Certificate file path */
+    certData: null,                   /* String or Buffer containing certificate data, if supplied uses this instead of cert file path */
+    key:  "dev_cert.pem",             /* Key file path */
+    keyData: null,                    /* String or Buffer containing key data, as certData */
     passphrase: null,                 /* A passphrase for the Key file */
     ca: null,                         /* String or Buffer of CA data to use for the TLS connection */
     gateway: 'gateway.sandbox.push.apple.com',/* gateway address */
