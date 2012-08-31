@@ -1,0 +1,11 @@
+{
+  "name": "flying_pusher",
+  "version": "0.0.1",
+  "dependencies" : {
+    "apn"  :  "1.2.4",
+    "express" : "3.0"
+  },
+  "engines": {
+    "node": "0.6.x:"
+  }
+}
