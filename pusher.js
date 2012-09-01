@@ -63,7 +63,7 @@ app.post('/github/webhook', function(req, res) {
         note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
         note.badge = 0;
         note.sound = "ping.aiff";
-        note.alert = payload.pusher.username + " pushed to " + payload.repository.name;
+        note.alert = payload.pusher.name + " pushed to " + payload.repository.name;
         note.payload = {'messageFrom': 'flying pusher'};
         note.device = device;      
         apnsConnection.sendNotification(note);
