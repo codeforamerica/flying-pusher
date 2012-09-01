@@ -48,7 +48,7 @@ app.get('/register', function(req, res) {
 app.post('/github/webhook', function(req, res) {
   var payload = JSON.parse(req.param("payload", null));
   console.log(payload);
-  console.log(payload.pusher.username + " pushed to " + payload.repository.name);
+  console.log(payload.pusher.name + " pushed to " + payload.repository.name);
 
   mongo.Db.connect(process.env.MONGOHQ_URL, function(error, client) {
     if (error) throw error;
