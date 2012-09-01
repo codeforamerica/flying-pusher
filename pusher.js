@@ -16,7 +16,6 @@ var options = {
 
 // push
 var apnsConnection = new apns.Connection(options);
-var myDevice = new apns.Device("daa91a4c 12c00203 c8adbdd2 9a1445fb bb4d77a9 88108b08 807f78f0 2e462942");
 
 //mongo
 var mongo = require('mongodb');
@@ -38,8 +37,8 @@ app.get('/register', function(req, res) {
   mongo.Db.connect(process.env.MONGOHQ_URL, function(error, client) {
     if (error) throw error;
 
-    client.collection('test', function(err, collection) {
-      var doc = {token: token};
+    client.collection('tokens', function(err, collection) {
+      var doc = {_id: token, token: token};
       collection.insert(doc);
     });
   });  
@@ -50,15 +49,33 @@ app.post('/github/webhook', function(req, res) {
   var payload = JSON.parse(req.param("payload", null));
   console.log(payload.pusher.username + " pushed to " + payload.repository.name);
 
-  var note = new apns.Notification();
-  note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
-  note.badge = 0;
-  note.sound = "ping.aiff";
-  note.alert = payload.pusher.username + " pushed to " + payload.repository.name;
-  note.payload = {'messageFrom': 'flying pusher'};
-  note.device = myDevice;
+  mongo.Db.connect(process.env.MONGOHQ_URL, function(error, client) {
+    if (error) throw error;
 
-  apnsConnection.sendNotification(note);
+    var collection = new mongo.Collection(client, "tokens");
+    var stream = collection.find().streamRecords();    
+    stream.on("data", function(item) {
+      try {
+        var token = item['token'];            
+        var device = new apns.Device(token.match(/[^<]+[^>]/)[0]);
+        var note = new apns.Notification();
+        note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+        note.badge = 0;
+        note.sound = "ping.aiff";
+        note.alert = payload.pusher.username + " pushed to " + payload.repository.name;
+        note.payload = {'messageFrom': 'flying pusher'};
+        note.device = device;      
+        apnsConnection.sendNotification(note);
+      } catch(err) {
+        console.log(err);
+      }
+      console.log("sending to token: " + token.match(/[^<]+[^>]/)[0]);
+    });
+    stream.on("end", function() {
+      console.log("done looping through tokens");
+    });
+  });
+  
   res.status(201).send('');
 });
 
