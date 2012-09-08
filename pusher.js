@@ -31,8 +31,22 @@ app.use(express.bodyParser());
 app.get('/', function(req, res) {
   res.send('hello world');
 });
-app.get('/register', function(req, res) {
-  var token = req.param("token");
+// app.get('/register', function(req, res) {
+//   var token = req.param("token");
+//   console.log(token);
+//   mongo.Db.connect(process.env.MONGOHQ_URL, function(error, client) {
+//     if (error) throw error;
+
+//     client.collection('tokens', function(err, collection) {
+//       var doc = {_id: token, token: token};
+//       collection.insert(doc);
+//     });
+//   });  
+
+//   res.status(200).send('');  
+// });
+app.post('/register', function(req, res) {
+  var token = req.body.token;
   console.log(token);
   mongo.Db.connect(process.env.MONGOHQ_URL, function(error, client) {
     if (error) throw error;
@@ -41,9 +55,9 @@ app.get('/register', function(req, res) {
       var doc = {_id: token, token: token};
       collection.insert(doc);
     });
-  });  
+  }); 
 
-  res.status(200).send('');  
+  res.status(201).send('');
 });
 app.post('/github/webhook', function(req, res) {
   var payload = JSON.parse(req.param("payload", null));
